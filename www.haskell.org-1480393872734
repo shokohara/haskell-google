@@ -1,0 +1,53 @@
+DownloadsCommunityDocumentationNewsAn advanced, purely functional programming languageDeclarative, statically typed code.primes = filterPrime [2..] 
+  where filterPrime (p:xs) = 
+          p : filterPrime [x | x <- xs, x `mod` p /= 0]Try it!<div class=" span6 "><div class="alert alert-warning">Try haskell requires Javascript to be enabled.</div></div>Try haskell requires cookies to be enabled.Type Haskell expressions in here.λ  Got 5 minutes?Type help to start the tutorial.Or try typing these out and see what happens (click to insert):23 * 36 or reverse "hello" or foldr (:) [] [1,2,3] or do line <- getLine; putStrLn line or readFile "/welcome"These IO actions are supported in this sandbox.VideosFunctional Reactive Programming for Musical User Interfaces by Paul HudakConquering Hadoop with Haskell and Ozgun AtamanUsing Lenses to Structure State with Nathan BouscalGHCJS: Bringing Haskell to the Browser, by Luite StegemanJürgen Cito presents todo-example, a lightweight webapp in HaskellAbstractions for the Functional Roboticist with Anthony CowleyFeaturesStatically typedEvery expression in Haskell has a type which is determined at compile time. All the types composed together by function application have to match up. If they don't, the program will be rejected by the compiler. Types become not only a form of guarantee, but a language for expressing the construction of programs.Click to expandAll Haskell values have a type:char = 'a'    :: Char
+int = 123     :: Int
+fun = isDigit :: Char -> Bool
+You have to pass the right type of values to functions, or the compiler will reject the program:Type errorisDigit 1You can decode bytes into text:bytes = Crypto.Hash.SHA1.hash "hello" :: ByteString
+text = decodeUtf8 bytes               :: Text
+But you cannot decode Text, which is already a vector of Unicode points:Type errordoubleDecode = decodeUtf8 (decodeUtf8 bytes)Purely functionalEvery function in Haskell is a function in the mathematical sense (i.e., "pure"). Even side-effecting IO operations are but a description of what to do, produced by pure code. There are no statements or instructions, only expressions which cannot mutate variables (local or global) nor access state like time or random numbers.Click to expandThe following function takes an integer and returns an integer. By the type it cannot do any side-effects whatsoever, it cannot mutate any of its arguments.square :: Int -> Int
+square x = x * xThe following string concatenation is okay:"Hello: " ++ "World!" The following string concatenation is a type error:Type error"Name: " ++ getLineBecause getLine has type IO String and not String, like "Name: " is. So by the type system you cannot mix and match purity with impurity.Type inferenceYou don't have to explicitly write out every type in a Haskell program. Types will be inferred by unifying every type bidirectionally. However, you can write out types if you choose, or ask the compiler to write them for you for handy documentation.Click to expandThis example has a type signature for every binding:main :: IO ()
+main = do line :: String <- getLine
+          print (parseDigit line)
+  where parseDigit :: String -> Maybe Int
+        parseDigit ((c :: Char) : _) =
+          if isDigit c
+             then Just (ord c - ord '0')
+             else NothingBut you can just write:main = do line <- getLine
+          print (parseDigit line)
+  where parseDigit (c : _) =
+          if isDigit c
+             then Just (ord c - ord '0')
+             else NothingYou can also use inference to avoid wasting time explaining what you want:do ss <- decode "[\"Hello!\",\"World!\"]"
+   is <- decode "[1,2,3]"
+   return (zipWith (\s i -> s ++ " " ++ show (i + 5)) ss is)
+ => Just ["Hello! 6","World! 7"]Types give a parser specification for free, the following input is not accepted:do ss <- decode "[1,2,3]"
+   is <- decode "[null,null,null]"
+   return (zipWith (\s i -> s ++ " " ++ show (i + 5)) ss is)
+ => NothingConcurrentHaskell lends itself well to concurrent programming due to its explicit handling of effects. Its flagship compiler, GHC, comes with a high-performance parallel garbage collector and light-weight concurrency library containing a number of useful concurrency primitives and abstractions.Click to expandEasily launch threads and communicate with the standard library:main = do
+  done <- newEmptyMVar
+  forkIO (do putStrLn "I'm one thread!"
+             putMVar done "Done!")
+  second <- forkIO (do threadDelay 100000
+                       putStrLn "I'm another thread!")
+  killThread second
+  msg <- takeMVar done
+  putStrLn msgUse an asynchronous API for threads:do a1 <- async (getURL url1)
+  a2 <- async (getURL url2)
+  page1 <- wait a1
+  page2 <- wait a2
+  ...Atomic threading with software transactional memory:transfer :: Account -> Account -> Int -> IO ()
+transfer from to amount =
+  atomically (do deposit to amount
+                 withdraw from amount)Atomic transactions must be repeatable, so arbitrary IO is disabled in the type system:Type errormain = atomically (putStrLn "Hello!")LazyFunctions don't evaluate their arguments. This means that programs can compose together very well, with the ability to write control constructs (such as if/else) just by writing normal functions. The purity of Haskell code makes it easy to fuse chains of functions together, allowing for performance benefits.Click to expandDefine control structures easily:when p m = if p then m else return ()
+main = do args <- getArgs
+          when (null args)
+               (putStrLn "No args specified!") If you notice a repeated expression pattern, like if c then t else Falseyou can give this a name, like and c t = if c then t else Falseand then use it with the same effect as the orginal expression.Get code re-use by composing lazy functions. It's quite natural to express the any function by reusing the map and or functions:any :: (a -> Bool) -> [a] -> Bool
+any p = or . map pReuse the recursion patterns in map, filter, foldr, etc.PackagesOpen source contribution to Haskell is very active with a wide range of packages available on the public package servers.Click to expandThere are 6,954 packages freely available. Here is a sample of the most common ones:bytestringBinary databasePrelude, IO, threadsnetworkNetworkingtextUnicode textparsecParser librarydirectoryFile/directoryhspecRSpec-like testsattoparsecFast parsermonad-loggerLoggingpersistentDatabase ORMtemplate-haskellMeta-programmingtarTar archivessnapWeb frameworktimeDate, time, etc.happstackWeb frameworkyesodWeb frameworkcontainersMaps, graphs, setsfsnotifyWatch filesystemhintInterpret HaskellunixUNIX bindingsSDLSDL bindingOpenGLOpenGL graphics systemcriterionBenchmarkingpangoText renderingcairoCairo graphicsstatisticsStatistical analysisgtkGtk+ libraryglibGLib librarytest-frameworkTesting frameworkresource-poolResource poolingconduitStreaming I/Omwc-randomHigh-quality randomsQuickCheckProperty testingstmAtomic threadingblaze-htmlMarkup generationcerealBinary parsing/printingxmlXML parser/printerhttp-clientHTTP client enginezlibzlib/gzip/rawyamlYAML parser/printerpandocMarkup conversionbinarySerializationtlsTLS/SSLzip-archiveZip compressionwarpWeb servertext-icuText encodingsvectorVectorsasyncAsyn concurrencypipesStreaming IOscientificArbitrary-prec. numsprocessLaunch processesaesonJSON parser/printerdlistDifflistssybGeneric prog.SponsorsDataDog provides powerful, customizable 24/7 metrics and monitoring integration for all of Haskell.org, and complains loudly for us when things go wrong.Fastly's Next Generation CDN provides low latency access for all of Haskell.org's downloads and highest traffic services, including the primary Hackage server, Haskell Platform downloads, and more.Rackspace provides compute, storage, and networking resources, powering almost all of Haskell.org in several regions around the world.Status.io powers https://status.haskell.org, and lets us easily tell you when we broke something.Galois provides infrastructure, funds, administrative resources and has historically hosted critical Haskell.org infrastructure, as well as helping the Haskell community at large with their work.DreamHost has teamed up to provide Haskell.org with redundant, scalable object-storage through their Dream Objects service.Awake Networks is building a next generation network security and analytics platform. They are a proud sponsor of the Summer of Haskell and contribute broadly to the Haskell community.Haskell Book is a proud sponsor of the Summer of Haskell and provides a complete and up-to-date resource for learning Haskell -- suitable whether you're completely new to Haskell or are at an intermediate level and want to deepen your understanding.Webmon provides monitoring and escalation for core haskell.org infrastructure.Psst! Looking for the wiki?This is the new Haskell home page! The wiki has moved to wiki.haskell.org.© 2014–2016 haskell.orgGot changes to contribute to the site? Fork or comment on GithubProudly hosted by var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-83290513-1']);
+_gaq.push(['_trackPageview']);
+(function() {
+ var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+ ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+ var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
