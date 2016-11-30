@@ -6,16 +6,15 @@ module Problem1Spec (spec) where
 
 import Prelude hiding (lines)
 import Problem1
-import Test.HUnit
 import Test.Hspec
---import Test.Hspec.Contrib.HUnit
-import Data.String.Here
+import Test.HUnit
+import Data.FileEmbed
 import Data.Maybe
+import Data.String.Here
 import Data.Text (lines)
 import qualified Data.Text.IO as T
-import Test.WebDriver
 import Debug.Trace
-import Data.FileEmbed
+import Test.WebDriver
 
 spec :: Spec
 spec = do
@@ -24,9 +23,9 @@ spec = do
       words [i|--noua --json|] `shouldBe` ["--noua", "--json"]
   describe "" $ do
     it "h" $
-      length . fromJust <$> h "Haskell" 4 `shouldReturn` 4
-    it "d" $
-      isJust <$> f "test" 1 `shouldReturn` True
-    it "f" $
-      length . fromJust <$> f "test" 1 `shouldReturn` 1
+      length . fromJust <$> hhh "Haskell" 4 "haskell" `shouldReturn` 3
+--    it "d" $
+--      isJust <$> f "test" 1 `shouldReturn` True
+--    it "f" $
+--      length . fromJust <$> f "test" 1 `shouldReturn` 1
 
