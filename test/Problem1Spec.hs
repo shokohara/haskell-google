@@ -5,25 +5,21 @@
 module Problem1Spec (spec) where
 
 import Prelude hiding (lines)
-import Problem1
 import Test.Hspec
-import Test.HUnit
-import Data.FileEmbed
 import Data.Maybe
+import Data.List as L
 import Data.String.Here
-import Data.Text (lines)
-import qualified Data.Text.IO as T
-import Debug.Trace
-import Test.WebDriver
 
 spec :: Spec
 spec = do
-  describe "premise" $
+  describe "premise" $ do
     it "words" $
       words [i|--noua --json|] `shouldBe` ["--noua", "--json"]
-  describe "" $ do
-    it "h" $
-      length . fromJust <$> hhh "Haskell" 4 "haskell" `shouldReturn` 3
+    it "intercalate" $
+      L.intercalate "\n" ["", ""] `shouldBe` "\n"
+--  describe "" $ do
+--    it "h" $
+--      length . fromJust <$> hhh "Haskell" 1 "haskell" `shouldReturn` 1
 --    it "d" $
 --      isJust <$> f "test" 1 `shouldReturn` True
 --    it "f" $

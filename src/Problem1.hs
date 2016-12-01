@@ -10,24 +10,24 @@ import Data.ByteString (empty)
 import qualified Data.ByteString.Lazy as BL
 import Data.ByteString.Lazy (ByteString)
 import Data.Maybe
-import Data.Monoid
 import Data.String.Here
-import Data.Text (Text, isInfixOf, unpack)
+import Data.Text (Text, isInfixOf, unpack, lines)
 import GHC.Generics
-import Prelude
+import Prelude hiding (lines)
 import System.Process.ByteString
 import Test.WebDriver
+import Data.Tuple.HT
 
 data Googler = Googler { abstract, title, url :: Text } deriving (Generic, Eq)
 
 instance FromJSON Googler
 
-hhh :: String -> Int -> Text -> IO (Maybe [(Googler, Text)])
+hhh :: String -> Int -> Text -> IO (Maybe [(Googler, [Text])])
 hhh k c r = runMaybeT $ do
   googlers <- MaybeT $ decodeToGooglers <$> search k c
   texts <- lift $ (mapM crawl googlers >>= return)
   googlerText <- return $ zip googlers texts
-  return $ filter (isInfixOf r . snd) $ googlerText
+  return . filter (not . null . snd) . map (mapSnd (filter (isInfixOf r) . lines)) $ googlerText
 
 search :: String -> Int -> IO ByteString
 search k c = do
