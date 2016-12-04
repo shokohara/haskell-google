@@ -43,3 +43,18 @@ crawl v = runSession defaultConfig . finallyClose $ do
   x <- findElem . ByXPath $ "//body/."
   getText x
 
+check::[Char]->[Char]->Bool
+check l s = check' l s True where
+  check' _ [] h          = True
+  check' [] _ h          = False
+  check' (x:xs) (y:ys) h = (y == x && check' xs ys False) || (h && check' xs (y:ys) h)
+
+--check :: Eq a => [a] -> [a] -> Bool
+--check l s = check' l s True where
+--    check' _ [] h          = True
+--    check' [] _ h          = False
+--    check' (x:xs) (y:ys) h = (y == x && check' xs ys False) || (h && check' xs (y:ys) h)
+--data X = MyText Text | HighlightedText Text
+--
+--highlight :: Text -> Text -> [X]
+--highlight src word =
