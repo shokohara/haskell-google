@@ -1,0 +1,3 @@
+Usage:
+  myprog search [--count=<count>] [--ccount=<ccount>] <keyword> <word>
+

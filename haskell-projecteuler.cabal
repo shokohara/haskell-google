@@ -30,6 +30,7 @@ library
                      , tagsoup
                      , transformers
                      , utility-ht
+                     , parallel
   default-language:    Haskell2010
 
 executable haskell-projecteuler-exe
@@ -41,6 +42,7 @@ executable haskell-projecteuler-exe
                      , text
                      , utf8-string
                      , ansi-terminal
+                     , docopt
   default-language:    Haskell2010
 
 test-suite haskell-projecteuler-test

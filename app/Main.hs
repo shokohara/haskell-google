@@ -1,4 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE QuasiQuotes #-}
 module Main where
 
 import Data.Maybe (maybeToList)
@@ -6,12 +7,26 @@ import Data.Text (Text, unpack, intercalate, pack)
 import Problem1
 import System.Console.ANSI
 import System.Environment
+import Control.Monad (when)
+import Data.Char (toUpper)
+import System.Environment (getArgs)
+import System.Console.Docopt
+
+patterns :: Docopt
+patterns = [docoptFile|USAGE.txt|]
+
+getArgOrExit = getArgOrExitWith patterns
 
 main :: IO ()
 main = do
-  x <- getArgs
-  v <- hhh (x !! 0) (read . (flip (!!) 1) $ x) (pack $ x !! 2)
-  mapM_ display (zip [0..] . concat . maybeToList $ v)
+  args <- parseArgsOrExit patterns =<< getArgs
+  when (args `isPresent` (command "search")) $ do
+    keyword <- args `getArgOrExit` argument "keyword"
+    count <- args `getArgOrExit` longOption "count"
+    scount <- args `getArgOrExit` longOption "ccount"
+    word <- args `getArgOrExit` argument "word"
+    v <- hhh keyword (read count) (read scount) (pack word)
+    mapM_ display (zip [0..] . concat . maybeToList $ v)
 
 display :: (Int, (Googler, [Text])) -> IO ()
 display (n, ((Googler _ t u), ts)) = do
